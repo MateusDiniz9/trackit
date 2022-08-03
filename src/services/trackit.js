@@ -2,6 +2,14 @@ import axios from "axios";
 
 const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit";
 
+function makeAuth(token) {
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+}
+
 function signUp(body) {
   const promise = axios.post(`${url}/auth/sign-up`, body);
   return promise;
@@ -12,31 +20,38 @@ function logIN(body) {
   return promise;
 }
 
-function createHabit(body, config) {
+function createHabit(body, token) {
+  const config = makeAuth(token);
   const promise = axios.post(`${url}/habits`, body, config);
   return promise;
 }
-function listHabits(config) {
+function listHabits(token) {
+  const config = makeAuth(token);
   const promise = axios.get(`${url}/habits`, config);
   return promise;
 }
-function deleteHabit(idHabit, config) {
+function deleteHabit(idHabit, token) {
+  const config = makeAuth(token);
   const promise = axios.delete(`${url}/habits/${idHabit}`, config);
   return promise;
 }
-function getTodayHabits(config) {
+function getTodayHabits(token) {
+  const config = makeAuth(token);
   const promise = axios.get(`${url}/habits/today`, config);
   return promise;
 }
-function checkHabit(idHabit, config) {
+function checkHabit(idHabit, token) {
+  const config = makeAuth(token);
   const promise = axios.post(`${url}/habits/${idHabit}/check`, config);
   return promise;
 }
-function unCheckHabit(idHabit, config) {
+function unCheckHabit(idHabit, token) {
+  const config = makeAuth(token);
   const promise = axios.post(`${url}/habits/${idHabit}/uncheck`, config);
   return promise;
 }
-function historyDailyHabits(config) {
+function historyDailyHabits(token) {
+  const config = makeAuth(token);
   const promise = axios.get(`${url}/habits/history/daily`, config);
   return promise;
 }
