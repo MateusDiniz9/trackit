@@ -49,6 +49,7 @@ export default function LoginS() {
 }
 
 const Wraper = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;

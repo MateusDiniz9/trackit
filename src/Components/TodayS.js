@@ -6,7 +6,7 @@ import Header from "./Header";
 import Menu from "./Menu";
 
 export default function TodayS() {
-  const { photo, token } = useContext(UserContext);
+  const { token, photo } = useContext(UserContext);
   const [habits, setHabits] = useState([]);
   const now = new Date();
   const weekday = [
@@ -22,7 +22,6 @@ export default function TodayS() {
   useEffect(() => {
     getTodayHabits(token).then((res) => setHabits(res.data));
   }, []);
-
   return (
     <Wraper>
       <Header img={photo} />

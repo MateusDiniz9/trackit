@@ -1,24 +1,106 @@
+import { useState } from "react";
 import styled from "styled-components";
+import { createHabit } from "../services/trackit";
 
-export default function NewHabit({ new1, setNew1 }) {
+function Day({ day, index, sel, setSel }) {
+  const [clicked, setClicked] = useState(false);
+  day = { ...day, clicked };
+  function selectDay() {
+    setClicked(!clicked);
+    setSel([...sel, index]);
+  }
+  function unSelectDay() {
+    setClicked(!clicked);
+    let ind = sel.indexOf(index);
+    sel.splice(ind, 1);
+  }
+  if (day.clicked) {
+    return (
+      <>
+        <But onClick={unSelectDay} color={"#ffffff"} backcolor={"#d4d4d4"}>
+          {day.name}
+        </But>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <But onClick={selectDay} color={"#d4d4d4"} backcolor={"#ffffff"}>
+          {day.name}
+        </But>
+      </>
+    );
+  }
+}
+
+export default function NewHabit({ new1, setNew1, token }) {
+  const [sel, setSel] = useState([]);
+  const days = [
+    {
+      name: "D",
+    },
+    {
+      name: "S",
+    },
+    {
+      name: "T",
+    },
+    {
+      name: "Q",
+    },
+    {
+      name: "Q",
+    },
+    {
+      name: "S",
+    },
+    {
+      name: "S",
+    },
+  ];
+  const [daysD, setDaysD] = useState([...days]);
+  const [name, setName] = useState("");
+
+  function postHabit() {
+    const body = {
+      name: name,
+      days: sel,
+    };
+    createHabit(body, token)
+      .catch((res) => alert(res.response))
+      .then();
+    setNew1(false);
+    setSel([]);
+    setName([]);
+    setDaysD([...days]);
+  }
+
   if (new1 === false) {
     return <></>;
   } else {
     return (
       <Wraper>
-        <input type="text" placeholder="nome do hábito" />
+        <input
+          type="text"
+          placeholder="nome do hábito"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
         <Days>
-          <button>D</button>
-          <button>S</button>
-          <button>T</button>
-          <button>Q</button>
-          <button>Q</button>
-          <button>S</button>
-          <button>S</button>
+          {daysD.map((day, index) => (
+            <Day
+              day={day}
+              key={index}
+              index={index}
+              sel={sel}
+              setSel={setSel}
+            />
+          ))}
         </Days>
         <Buttons>
           <button onClick={() => setNew1(false)}>Cancelar</button>
-          <button>Salvar</button>
+          <button onClick={postHabit}>Salvar</button>
         </Buttons>
       </Wraper>
     );
@@ -47,15 +129,20 @@ const Wraper = styled.div`
 
 const Days = styled.div`
   margin-left: 15px;
-  button {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #d4d4d4;
-    margin-right: 5px;
-    color: #d4d4d4;
-    border-radius: 5px;
-    background-color: #ffffff;
-  }
+  display: flex;
+`;
+
+const But = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #d4d4d4;
+  margin-right: 5px;
+  color: ${(props) => props.color};
+  border-radius: 5px;
+  background-color: ${(props) => props.backcolor};
 `;
 
 const Buttons = styled.div`
