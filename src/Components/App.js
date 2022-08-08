@@ -13,6 +13,7 @@ export default function App() {
 
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
+  const [value, setValue] = useState(0);
 
   return (
     <>
@@ -25,6 +26,8 @@ export default function App() {
           setName,
           photo,
           setPhoto,
+          value,
+          setValue,
         }}
       >
         <BrowserRouter>

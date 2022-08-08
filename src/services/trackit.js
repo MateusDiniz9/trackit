@@ -42,12 +42,12 @@ function getTodayHabits(token) {
 }
 function checkHabit(idHabit, token) {
   const config = makeAuth(token);
-  const promise = axios.post(`${url}/habits/${idHabit}/check`, config);
+  const promise = axios.post(`${url}/habits/${idHabit}/check`, {}, config);
   return promise;
 }
 function unCheckHabit(idHabit, token) {
   const config = makeAuth(token);
-  const promise = axios.post(`${url}/habits/${idHabit}/uncheck`, config);
+  const promise = axios.post(`${url}/habits/${idHabit}/uncheck`, {}, config);
   return promise;
 }
 function historyDailyHabits(token) {

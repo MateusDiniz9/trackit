@@ -6,38 +6,69 @@ import { getTodayHabits, checkHabit, unCheckHabit } from "../services/trackit";
 import Header from "./Header";
 import Menu from "./Menu";
 
-function Habit({ habit, index, HabitID, setHabitID, token }) {
-  console.log(habit);
-  function justDone() {
-    console.log(habit.id);
-    checkHabit(habit.id, token).then((res) => console.log(res.data));
+function resolveValue(habits) {
+  let some = 0;
+
+  for (let i = 0; i < habits.length; i++) {
+    if (habits[i].done) {
+      some += 1;
+    }
   }
+  return (some / habits.length) * 100;
+}
+
+function Habit({ habit, token, habits, setHabits, setDone, value, setValue }) {
+  if (habit.done) {
+    setDone(true);
+  }
+  function justDone() {
+    checkHabit(habit.id, token).then(() =>
+      getTodayHabits(token).then((res) => {
+        setHabits(res.data);
+        setValue(resolveValue(res.data));
+      })
+    );
+  }
+
   function justUnDone() {
-    console.log(habit.id);
-    unCheckHabit(habit.id, token).then((res) => console.log(res.data));
+    unCheckHabit(habit.id, token).then(() =>
+      getTodayHabits(token).then((res) => {
+        setHabits(res.data);
+        setValue(resolveValue(res.data));
+      })
+    );
   }
   return (
     <Hab>
       <div>
         <h2>{habit.name}</h2>
         {habit.done ? (
-          <h3 color="#8FC549">Sequência Atual: {habit.currentSequence}</h3>
+          <Subtitle color="#8FC549">
+            Sequência Atual: {habit.currentSequence}
+          </Subtitle>
         ) : (
-          <h3 color="#666666">Sequência Atual: {habit.currentSequence}</h3>
+          <Subtitle color="#666666">
+            Sequência Atual: {habit.currentSequence}
+          </Subtitle>
         )}
-        {habit.highestSequence > habit.currentSequence ? (
-          <h3 color="#8FC549">Seu Recorde: {habit.highestSequence}</h3>
+        {habit.highestSequence >= habit.currentSequence &&
+        habit.currentSequence !== 0 ? (
+          <Subtitle color="#8FC549">
+            Seu Recorde: {habit.highestSequence}
+          </Subtitle>
         ) : (
-          <h3 color="#666666">Seu Recorde: {habit.highestSequence}</h3>
+          <Subtitle color="#666666">
+            Seu Recorde: {habit.highestSequence}
+          </Subtitle>
         )}
       </div>
       {habit.done ? (
         <But color={"white"} back={"#8FC549"} onClick={justUnDone}>
-          <ion-icon name="checkmark-outline"></ion-icon>1
+          <ion-icon name="checkmark-outline"></ion-icon>
         </But>
       ) : (
         <But color={"white"} back={"#EBEBEB"} onClick={justDone}>
-          <ion-icon name="checkmark-outline"></ion-icon>2
+          <ion-icon name="checkmark-outline"></ion-icon>
         </But>
       )}
     </Hab>
@@ -45,10 +76,9 @@ function Habit({ habit, index, HabitID, setHabitID, token }) {
 }
 
 export default function TodayS() {
-  const { token, photo } = useContext(UserContext);
+  const { token, photo, value, setValue } = useContext(UserContext);
   const [habits, setHabits] = useState([]);
-  const [value, setValue] = useState(0);
-  const [HabitID, setHabitID] = useState();
+  const [done, setDone] = useState(false);
 
   const weekday = [
     "Domingo",
@@ -61,13 +91,10 @@ export default function TodayS() {
   ];
 
   useEffect(() => {
-    getTodayHabits(token).then((res) => setHabits(res.data));
-    setValue(0);
-    for (let i = 0; i < habits.length; i++) {
-      if (habits[i].done) {
-        setValue(value + 1);
-      }
-    }
+    getTodayHabits(token).then((res) => {
+      setHabits(res.data);
+      setValue(resolveValue(res.data));
+    });
   }, []);
 
   return (
@@ -77,28 +104,39 @@ export default function TodayS() {
         <h1>{`${
           weekday[dayjs().day()]
         }, ${dayjs().date()}/${dayjs().month()}`}</h1>
-        <h2>
-          {value === 0
+        <PercentageText done={done}>
+          {!done
             ? `Nenhum Hábito concluído ainda`
-            : `${(value / habits.length) * 100}% dos hábitos concluídos`}
-        </h2>
+            : `${Math.round(value)}% dos hábitos concluídos`}
+        </PercentageText>
         <Habits>
-          {habits.map((habit, index) => (
-            <Habit
-              token={token}
-              habit={habit}
-              key={index}
-              index={index}
-              HabitID={HabitID}
-              setHabitID={setHabitID}
-            />
-          ))}
+          {habits.length > 0
+            ? habits.map((habit, index) => (
+                <Habit
+                  token={token}
+                  habit={habit}
+                  key={index}
+                  index={index}
+                  habits={habits}
+                  setHabits={setHabits}
+                  setDone={setDone}
+                  value={value}
+                  setValue={setValue}
+                />
+              ))
+            : ""}
         </Habits>
       </Content>
       <Menu value={value} />
     </Wraper>
   );
 }
+
+const PercentageText = styled.h2`
+  font-size: 18px;
+  color: ${(props) => (props.done ? "#8FC549" : "#bababa")};
+  margin-left: 15px;
+`;
 const But = styled.div`
   width: 69px;
   height: 69px;
@@ -128,10 +166,11 @@ const Hab = styled.div`
     font-size: 20px;
     margin-bottom: 15px;
   }
-  h3 {
-    font-size: 13px;
-    padding-left: 13px;
-  }
+`;
+const Subtitle = styled.h3`
+  font-size: 13px;
+  padding-left: 13px;
+  color: ${(props) => props.color};
 `;
 const Habits = styled.div`
   display: flex;
@@ -141,6 +180,7 @@ const Habits = styled.div`
 `;
 const Wraper = styled.div`
   background-color: #f2f2f2;
+  height: calc(100vh - 70px);
 `;
 
 const Content = styled.div`
@@ -154,10 +194,5 @@ const Content = styled.div`
     margin-left: 15px;
     padding-top: 30px;
     margin-bottom: 10px;
-  }
-  h2 {
-    font-size: 18px;
-    color: #bababa;
-    margin-left: 15px;
   }
 `;

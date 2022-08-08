@@ -44,7 +44,9 @@ function Habit({ habit, token, confirm, setConfirm, habitId, setHabitId }) {
     setHabitId(habit.id);
   }
   function accept() {
-    deleteHabit(habitId, token).then((res) => console.log(res));
+    deleteHabit(habitId, token)
+      .catch((res) => alert(res))
+      .then((res) => console.log(res));
     setConfirm(false);
   }
   function reject() {
@@ -75,7 +77,7 @@ function Habit({ habit, token, confirm, setConfirm, habitId, setHabitId }) {
 }
 
 export default function HabitsS() {
-  const { token, photo } = useContext(UserContext);
+  const { token, photo, value } = useContext(UserContext);
   const [habits, setHabits] = useState([]);
   const [new1, setNew1] = useState(false);
   const [confirm, setConfirm] = useState(false);
@@ -117,7 +119,7 @@ export default function HabitsS() {
       </Habits>
       <NewHabit new1={new1} setNew1={setNew1} token={token} />
 
-      <Menu value={66} />
+      <Menu value={value} />
     </Wraper>
   );
 }
@@ -195,7 +197,7 @@ const Wraper = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #f2f2f2;
-  width: 100%;
+  height: calc(100vh - 70px);
   h4 {
     margin-top: 20px;
     font-size: 18px;

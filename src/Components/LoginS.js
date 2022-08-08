@@ -4,21 +4,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { logIN } from "../services/trackit";
 import { useContext, useState } from "react";
 import UserContext from "../contexts/UserContext";
+import { BallTriangle } from "react-loader-spinner";
 
 export default function LoginS() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [able, setAble] = useState(false);
 
   const { setToken, setName, setPhoto } = useContext(UserContext);
   const navigate = useNavigate();
   function doLogin(e) {
     e.preventDefault();
+    setAble(true);
     logIN({ email: email, password: password }).then((res) => {
       setToken(res.data.token);
       setName(res.data.name);
       setPhoto(res.data.image);
+      setAble(false);
+      navigate("/hoje");
     });
-    navigate("/hoje");
   }
   return (
     <Wraper>
@@ -30,6 +34,7 @@ export default function LoginS() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={able}
         />
         <input
           type="password"
@@ -37,8 +42,23 @@ export default function LoginS() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={able}
         />
-        <button type="submit">Entrar</button>
+        <button type="submit" disabled={able}>
+          {able ? (
+            <BallTriangle
+              height="40"
+              width="40"
+              radius="5"
+              color="white"
+              ariaLabel="three-dots-loading"
+              wrapperStyle
+              wrapperClass
+            />
+          ) : (
+            "Entrar"
+          )}
+        </button>
       </form>
       <Link to="/cadastro">
         <h6>Não tem uma conta?Cadastre-se!</h6>
