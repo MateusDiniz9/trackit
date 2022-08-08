@@ -45,6 +45,8 @@ const Wraper = styled.div`
   background-color: #ffffff;
   color: #52b6ff;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.15);
+  z-index: 5;
+
   div {
     width: 91px;
     height: 91px;

@@ -115,6 +115,7 @@ const Wraper = styled.div`
   background-color: #ffffff;
   border-radius: 5px;
   margin: 25px auto;
+  margin-bottom: 105px;
   input {
     width: 90%;
     height: 45px;

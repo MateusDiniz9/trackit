@@ -21,7 +21,7 @@ function Day({ day }) {
     );
   }
 }
-function Habit({ habit, token, confirm, setConfirm }) {
+function Habit({ habit, token, confirm, setConfirm, habitId, setHabitId }) {
   const days = [
     { name: "D", selected: false },
     { name: "S", selected: false },
@@ -38,12 +38,13 @@ function Habit({ habit, token, confirm, setConfirm }) {
       }
     }
   }
+
   function deletHabit() {
     setConfirm(true);
-    console.log(habit.id);
+    setHabitId(habit.id);
   }
   function accept() {
-    deleteHabit(habit.id, token).then();
+    deleteHabit(habitId, token).then((res) => console.log(res));
     setConfirm(false);
   }
   function reject() {
@@ -78,11 +79,11 @@ export default function HabitsS() {
   const [habits, setHabits] = useState([]);
   const [new1, setNew1] = useState(false);
   const [confirm, setConfirm] = useState(false);
-  console.log(habits);
+  const [habitId, setHabitId] = useState();
 
   useEffect(() => {
     listHabits(token).then((res) => setHabits(res.data));
-  }, [new1, confirm]);
+  }, [new1, confirm, habitId]);
 
   function createNewHabit() {
     setNew1(true);
@@ -94,28 +95,35 @@ export default function HabitsS() {
         <h1>Meus Hábitos</h1>
         <button onClick={createNewHabit}>+</button>
       </Top>
-      {habits.length === 0 ? (
-        <h4>
-          Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para
-          começar a trackear!
-        </h4>
-      ) : (
-        habits.map((habit, index) => (
-          <Habit
-            habit={habit}
-            key={index}
-            token={token}
-            confirm={confirm}
-            setConfirm={setConfirm}
-          />
-        ))
-      )}
+      <Habits new={new1}>
+        {habits.length === 0 ? (
+          <h4>
+            Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para
+            começar a trackear!
+          </h4>
+        ) : (
+          habits.map((habit, index) => (
+            <Habit
+              habit={habit}
+              key={index}
+              token={token}
+              confirm={confirm}
+              setConfirm={setConfirm}
+              habitId={habitId}
+              setHabitId={setHabitId}
+            />
+          ))
+        )}
+      </Habits>
       <NewHabit new1={new1} setNew1={setNew1} token={token} />
 
       <Menu value={66} />
     </Wraper>
   );
 }
+const Habits = styled.div`
+  margin-bottom: ${(props) => (props.new ? "0" : "105px")};
+`;
 const ConfirmBox = styled.div`
   width: 200px;
   height: 100px;

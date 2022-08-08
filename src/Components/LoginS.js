@@ -14,7 +14,6 @@ export default function LoginS() {
   function doLogin(e) {
     e.preventDefault();
     logIN({ email: email, password: password }).then((res) => {
-      console.log(res.data);
       setToken(res.data.token);
       setName(res.data.name);
       setPhoto(res.data.image);

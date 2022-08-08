@@ -24,6 +24,7 @@ const Wraper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 5;
   img {
     width: 51px;
     height: 51px;
